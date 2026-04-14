@@ -216,6 +216,14 @@ function getRuntimeFetch(): typeof globalThis.fetch {
  * Custom fetch for Foundation Models that routes through Tauri IPC
  * instead of HTTP, emulating an OpenAI-compatible fetch interface.
  */
+/**
+ * Returns the reasoning tag name based on the model ID.
+ * Gemma models use 'thought', others typically use 'think'.
+ */
+function getReasoningTagName(modelId: string): string {
+  return modelId.toLowerCase().includes('gemma') ? 'thought' : 'think'
+}
+
 function createFoundationModelsFetch(
   parameters: Record<string, unknown>
 ): typeof globalThis.fetch {
@@ -409,7 +417,7 @@ export class ModelFactory {
     return wrapLanguageModel({
       model,
       middleware: extractReasoningMiddleware({
-        tagName: modelId.toLowerCase().includes('gemma') ? 'thought' : 'think',
+        tagName: getReasoningTagName(modelId),
         separator: '\n',
       }),
     })
@@ -499,7 +507,7 @@ export class ModelFactory {
     return wrapLanguageModel({
       model: model,
       middleware: extractReasoningMiddleware({
-        tagName: modelId.toLowerCase().includes('gemma') ? 'thought' : 'think',
+        tagName: getReasoningTagName(modelId),
         separator: '\n',
       }),
     })
@@ -573,7 +581,7 @@ export class ModelFactory {
     return wrapLanguageModel({
       model,
       middleware: extractReasoningMiddleware({
-        tagName: modelId.toLowerCase().includes('gemma') ? 'thought' : 'think',
+        tagName: getReasoningTagName(modelId),
         separator: '\n',
       }),
     })
